@@ -5,7 +5,7 @@ import yfinance as yf
 #reads csv selecting columns Company, # Laid Off, %, and Date Added
 desired_columns = ["Company", "# Laid Off", "%", "Date Added"]
 layoff_data = pandas.read_csv("/Users/nathanko/PycharmProjects/tech-layoffs-stock-analysis/data/raw/Layoffs.fyi  - Tech Layoffs Tracker.csv", usecols=desired_columns)
-print(layoff_data.head)
+print(layoff_data)
 
 #top 50 companies in # employees layed off
 top_100_layed_off = layoff_data.sort_values(by="# Laid Off", ascending=False).head(100)

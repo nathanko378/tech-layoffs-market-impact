@@ -1,4 +1,3 @@
-from fetch_stock_data_1 import fetch_dollar_change, fetch_percent_change
 import pandas
 
 #Format: #company_ticker, num_layoffs, percent_layoffs, dollar_change_stock_value, percent_change_stock_value
