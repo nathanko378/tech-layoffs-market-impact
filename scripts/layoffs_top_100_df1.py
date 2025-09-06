@@ -29,13 +29,13 @@ def get_ticker(company_name):
         return "N/A"
 
 #tickers of top 50 companies
-###top_50_ticker = [get_ticker(company) for company in top_100_layed_off.Company]
+top_50_ticker = [get_ticker(company) for company in top_100_layed_off.Company]
 
 #replaces company column with ticker to top 100 dataframe
-###top_100_layed_off["Ticker"] = top_100_layed_off["Company"].apply(get_ticker)
+top_100_layed_off["Ticker"] = top_100_layed_off["Company"].apply(get_ticker)
 
 #creating csv to save data
-###top_100_layed_off.to_csv("/Users/nathanko/PycharmProjects/tech-layoffs-stock-analysis/data/raw/top_100_layoffs_csv")
+top_100_layed_off.to_csv("/Users/nathanko/PycharmProjects/tech-layoffs-stock-analysis/data/raw/top_100_layoffs_csv")
 
 
 
