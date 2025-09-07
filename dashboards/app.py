@@ -1,8 +1,14 @@
 import streamlit as st
+import pandas as pd
 
-st.write("""
-# 📉 :violet[Tech Layoffs & Market Impact (2025)]
-Data analysis of the relationship between major tech layoffs and stockholder value. 
-Explore these interactive dashboards showing how workforce reductions correlate 
-with company and sector stock performance.""")
+st.set_page_config(page_title="Tech Layoffs & Market Impact (2025)", layout="wide")
 
+#Title and Description
+st.title("📉 :violet[Tech Layoffs & Market Impact (2025)]")
+st.markdown(
+    """
+    Interactive dashboard exploring the relationship between major tech layoffs and stockholder value.
+
+    **Data sources:** Layoffs.fyi & Yahoo Finance  
+    """
+)

@@ -46,11 +46,11 @@ def price_change_5d(ticker, start_dt):
 
     stock.reset_index(inplace=True)
 
-    # find closest trading day to start_dt and end_dt
+    #find closest trading day to start_dt and end_dt
     start_idx = (stock["Date"] - start_dt).abs().idxmin()
     end_idx = (stock["Date"] - end_dt).abs().idxmin()
 
-    # .loc[...] returns a series if there are duplicates
+    #returns a series if there are duplicates
     start_value = float(stock.loc[start_idx, "Close"])
     end_value = float(stock.loc[end_idx, "Close"])
 
@@ -70,11 +70,11 @@ def percent_change_5d(ticker, start_dt):
 
     stock.reset_index(inplace=True)
 
-    # find closest trading day to start_dt and end_dt
+    #find closest trading day to start_dt and end_dt
     start_idx = (stock["Date"] - start_dt).abs().idxmin()
     end_idx = (stock["Date"] - end_dt).abs().idxmin()
 
-    # .loc[...] returns a series if there are duplicates
+    #returns a series if there are duplicates
     start_value = float(stock.loc[start_idx, "Close"])
     end_value = float(stock.loc[end_idx, "Close"])
 
