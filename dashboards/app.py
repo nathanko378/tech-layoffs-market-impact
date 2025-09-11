@@ -3,7 +3,7 @@ import pandas as pd
 
 st.set_page_config(page_title="Tech Layoffs & Market Impact (2025)", layout="wide")
 
-#Title and Description
+#title and description
 st.title("📉 :violet[Tech Layoffs & Market Impact (2025)]")
 st.markdown(
     """
@@ -12,3 +12,5 @@ st.markdown(
     **Data sources:** Layoffs.fyi & Yahoo Finance  
     """
 )
+
+df = pd.read_csv("/data/processed/d2").head(50)
