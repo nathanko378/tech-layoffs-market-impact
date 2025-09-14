@@ -13,4 +13,3 @@ st.markdown(
     """
 )
 
-df = pd.read_csv("/data/processed/d2").head(50)
