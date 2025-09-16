@@ -2,12 +2,14 @@ import pandas
 import requests
 import yfinance as yf
 
-#reads csv selecting columns Company, # Laid Off, %, and Date Added
-desired_columns = ["Company", "# Laid Off", "%", "Date Added"]
+#reads csv selecting columns Company, # Laid Off, %, Date Added, and Stage
+desired_columns = ["Company", "# Laid Off", "%", "Date Added", "Stage"]
 layoff_data = pandas.read_csv("/Users/nathanko/PycharmProjects/tech-layoffs-stock-analysis/data/raw/Layoffs.fyi  - Tech Layoffs Tracker.csv", usecols=desired_columns)
 
-#top 50 companies in # employees layed off
-top_100_layed_off = layoff_data.sort_values(by="# Laid Off", ascending=False).head(100)
+#sorts by # Laid Off, and only selects companies Post-IPO
+layoff_data = layoff_data.sort_values(by="# Laid Off", ascending=False)
+layoff_data = layoff_data[layoff_data["Stage"] == "Post-IPO"]
+print(layoff_data)
 
 #functions to convert company name to company ticker
 def get_ticker(company_name):
@@ -27,16 +29,9 @@ def get_ticker(company_name):
     except Exception:
         return "N/A"
 
-#tickers of top 50 companies
-top_50_ticker = [get_ticker(company) for company in top_100_layed_off.Company]
+#adds column "Ticker", removing invalid tickers
+layoff_data["Ticker"] = layoff_data["Company"].apply(get_ticker)
+layoff_data = layoff_data[layoff_data["Ticker"] != "N/A"]
 
-#replaces company column with ticker to top 100 dataframe
-top_100_layed_off["Ticker"] = top_100_layed_off["Company"].apply(get_ticker)
-
-#creating new csv cuz ts takes too long
-top_100_layed_off.to_csv("/Users/nathanko/PycharmProjects/tech-layoffs-stock-analysis/data/raw/top_100_layoffs_csv")
-
-
-
-
-
+#to new csv
+layoff_data.to_csv("/Users/nathanko/PycharmProjects/tech-layoffs-stock-analysis/data/raw/clean_layoff_data.csv")
