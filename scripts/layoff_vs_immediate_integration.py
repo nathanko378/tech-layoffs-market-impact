@@ -1,5 +1,5 @@
 mimport pandas as pd
-from fetch_immediate_stock_data import price_change_5d, percent_change_5d
+from fetch_5d_stock_data import price_change_5d, percent_change_5d
 
 #Format: #company_ticker, num_layoffs, percent_layoffs, dollar_change_stock_value, percent_change_stock_value
 
