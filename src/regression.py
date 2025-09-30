@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 
-stock = yf.Ticker('NKE')
+stock = yf.Ticker('VG')
 hist = stock.history(period="1y")
 
 print(hist.head())
