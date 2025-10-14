@@ -1,4 +1,4 @@
-mimport pandas as pd
+import pandas as pd
 from fetch_5d_stock_data import price_change_5d, percent_change_5d
 
 #Format: #company_ticker, num_layoffs, percent_layoffs, dollar_change_stock_value, percent_change_stock_value
@@ -23,3 +23,5 @@ layoff_df["$ Change 5D"] = immediate_list_dollar
 layoff_df["% Change 5D"] = immediate_list_percent
 
 layoff_df.to_csv("/Users/nathanko/PycharmProjects/tech-layoffs-stock-analysis/data/processed/layoff_vs_immediate.csv")
+
+layoff_df_v2 = pd.read_csv("/Users/nathanko/PycharmProjects/tech-layoffs-stock-analysis/data/processed/layoff_vs_immediate.csv")

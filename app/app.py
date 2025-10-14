@@ -3,8 +3,8 @@ import yfinance as yf
 import pandas as pd
 import altair as alt
 
-cols = ["# Laid Off","% Laid Off","Date Added","Ticker","$ Change 5D","% Change 5D"]
-layoff_vs_immediate_df = pd.read_csv("/Users/nathanko/PycharmProjects/tech-layoffs-stock-analysis/data/processed/layoff_vs_immediate.csv", usecols=cols)
+cols = ["# Laid Off","% Laid Off","Date Added","Ticker","$ Change 5D","% Change 5D", "$ Change 1Y", "% Change 1Y"]
+layoff_vs_immediate_df = pd.read_csv("/Users/nathanko/PycharmProjects/tech-layoffs-stock-analysis/data/processed/layoff_vs_immediate_updated.csv", usecols=cols)
 layoff_vs_immediate_df['% Laid Off'] = layoff_vs_immediate_df['% Laid Off'].str.replace('%', '').astype(float)
 
 
