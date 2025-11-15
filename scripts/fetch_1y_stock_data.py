@@ -7,7 +7,7 @@ def price_change_1y(ticker, start_dt):
     today = pd.Timestamp.today().normalize()
     end_dt = min(start_dt + pd.Timedelta(days=365), today)  # cap at today
 
-    # download a buffer around both ends to handle non-trading days
+    #download a buffer around both ends to handle non-trading days
     stock = yf.download(
         ticker,
         start=start_dt - pd.Timedelta(days=2),
@@ -18,7 +18,7 @@ def price_change_1y(ticker, start_dt):
 
     stock.reset_index(inplace=True)
 
-    # find closest trading days
+    #find closest trading days
     start_idx = (stock["Date"] - start_dt).abs().idxmin()
     end_idx = (stock["Date"] - end_dt).abs().idxmin()
 
@@ -50,6 +50,6 @@ def percent_change_1y(ticker, start_dt):
 
     return round((end_value - start_value) / start_value * 100, 2)
 
-# Example usage:
+#example usage:
 print(price_change_1y("AAPL", "2025-09-30"))
 print(percent_change_1y("AAPL", "2025-09-30"))
