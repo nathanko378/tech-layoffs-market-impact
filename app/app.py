@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import altair as alt
-import statsmodels.api as sm  # NEW: for regressions
 
 # ----------------------------
 # Load & process data
@@ -62,24 +61,41 @@ def weighted_mean(values: pd.Series, weights: pd.Series) -> float:
     return float((v * w).sum() / w.sum())
 
 
-def compute_regression_stats(df: pd.DataFrame, x_col: str, y_col: str):
+def compute_simple_regression(df: pd.DataFrame, x_col: str, y_col: str):
     """
-    Fit a simple OLS regression y ~ x.
-    Returns (slope, p_value, r_squared, model) or None if not enough data.
+    Simple straight-line regression using AP Stats ideas.
+
+    - Uses Pearson correlation r
+    - slope = r * (sy / sx)
+    - intercept = y_bar - slope * x_bar
+    - R^2 = r^2
+
+    Returns (slope, intercept, r_squared, n) or None if not enough data.
     """
     valid = df[[x_col, y_col]].dropna()
-    if len(valid) < 3:
+    n = len(valid)
+    if n < 3:
         return None
 
-    X = sm.add_constant(valid[x_col])
+    x = valid[x_col]
     y = valid[y_col]
-    model = sm.OLS(y, X).fit()
 
-    slope = model.params[x_col]
-    p_value = model.pvalues[x_col]
-    r_squared = model.rsquared
+    # correlation r
+    r = x.corr(y)
+    # if correlation can't be computed
+    if pd.isna(r):
+        return None
 
-    return slope, p_value, r_squared, model
+    sx = x.std(ddof=0)
+    sy = y.std(ddof=0)
+    if sx == 0:
+        return None
+
+    slope = r * (sy / sx)
+    intercept = y.mean() - slope * x.mean()
+    r_squared = r ** 2
+
+    return float(slope), float(intercept), float(r_squared), n
 
 
 # ----------------------------
@@ -182,7 +198,7 @@ else:
         corr_1y = np.nan
 
     c1, c2, c3 = st.columns(3)
-    c1.metric("Avg 1-year S&P 500 change (benchmark)", f"{AVG_SP500_1Y:.2f}%")
+    c1.metric("Avg 1-year S&P 500 change (benchmark)", f"{10.56:.2f}%")
     c2.metric("Avg 5-day stock move (simple)", f"{avg_5d:.2f}%")
     c3.metric("Avg 1-year stock move (simple)", f"{avg_1y:.2f}%")
 
@@ -205,13 +221,13 @@ st.markdown("---")
 # ----------------------------
 # Regression section
 # ----------------------------
-st.subheader("📈 Regression: Layoff % vs Stock Returns")
+st.subheader("📈 Simple Line Fit: Layoff % vs Stock Returns")
 
 if filtered_df.empty:
-    st.info("Not enough data for regression under current filters.")
+    st.info("Not enough data for a line fit under current filters.")
 else:
     reg_window = st.radio(
-        "Choose return window for regression:",
+        "Choose return window for the line of best fit:",
         ("5-day return", "1-year return"),
         horizontal=True,
     )
@@ -223,31 +239,29 @@ else:
         y_col = "% Change 1Y"
         label = "1-year return (%)"
 
-    reg_result = compute_regression_stats(filtered_df, "% Laid Off", y_col)
+    reg_result = compute_simple_regression(filtered_df, "% Laid Off", y_col)
 
     if reg_result is None:
-        st.info("Not enough non-missing data points to run regression.")
+        st.info("Not enough non-missing data points to fit a simple line.")
     else:
-        slope, p_value, r_squared, model = reg_result
+        slope, intercept, r_squared, n = reg_result
 
-        col_a, col_b, col_c, col_d = st.columns(4)
-        col_a.metric("Slope (β)", f"{slope:.3f} % per 1% layoff")
-        col_b.metric("R²", f"{r_squared:.3f}")
-        col_c.metric("p-value (β)", f"{p_value:.4f}")
-        col_d.metric(
-            "Sample size (N)",
-            f"{len(filtered_df[['% Laid Off', y_col]].dropna())}",
-        )
+        col_a, col_b, col_c = st.columns(3)
+        col_a.metric("Slope (change per 1% layoff)", f"{slope:.3f} %")
+        col_b.metric("R² (strength of straight-line pattern)", f"{r_squared:.3f}")
+        col_c.metric("Sample size (N)", str(n))
 
         st.caption(
             f"""
-Model: `{label} = α + β × (% Laid Off) + ε`  
-A **negative β** suggests larger layoffs are associated with more negative {reg_window}.
+We fit a **straight line** using least-squares regression:
+
+> predicted {label} = {intercept:.2f} + ({slope:.3f}) × (% Laid Off)
+
+- The **slope** tells you, on average, how much the return changes when layoff size increases by 1 percentage point.  
+- **R²** is between 0 and 1. Values close to 0 mean layoff size doesn't explain much of the variation in returns;  
+  values closer to 1 indicate a stronger straight-line pattern.
 """
         )
-
-        with st.expander("Show full regression summary"):
-            st.text(model.summary().as_text())
 
 st.markdown("---")
 
@@ -268,7 +282,7 @@ This scatter plot compares:
 
 Each point is a layoff event.  
 
-The regression line gives a sense of the **overall relationship** between layoff severity and the short-term market reaction.
+The line of best fit (regression line) gives a sense of the **overall relationship** between layoff severity and the short-term market reaction.
 """
     )
 
@@ -347,7 +361,7 @@ This scatter plot compares:
 
 Each point is a layoff event.  
 
-The regression line shows whether **larger layoffs** are associated with **better or worse performance** over the 1-year horizon.
+The line of best fit shows whether **larger layoffs** are associated with **better or worse performance** over the 1-year horizon.
 """
     )
 
@@ -457,7 +471,7 @@ st.markdown(
 - Built an **interactive dashboard** in **Streamlit** with:
   - Filters for ticker, date, and layoff size  
   - Visualizations of layoff severity vs stock performance  
-  - Correlation, weighted-average, and regression analysis between layoff size and returns  
+  - Correlation, weighted-average, and **simple straight-line trend** analysis between layoff size and returns  
 
 The goal of this project is to challenge the assumption that layoffs are automatically “good for shareholders” by  
 **looking directly at how markets have actually reacted to these events over time.**
